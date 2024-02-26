@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
     const apiUrl = "http://localhost:5000/todolist";
+
+    const router = useRouter();
     const [showModal, setShowModal] = useState(false);
     const [showPriority, setShowPriority] = useState(false);
     
@@ -20,13 +23,17 @@ export default function HomePage() {
                 const res = await fetch(apiUrl);
                 const data = await res.json();
                 setInsertData(data);
-                console.log(data)
             } catch(e) {
                 console.log(e);
             }
         }
         fetchData();
     },[])
+
+    if(insertData.length !== 0) {
+        console.log(insertData);    
+        router.push('/todolist');
+    }
 
 
     // Functions handle
