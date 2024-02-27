@@ -1,8 +1,5 @@
 'use client'
 import HomePage from "@/components/HomePage";
-import TodosPage from "@/components/TodosPage";
-
-import { useState } from "react";
 
 export default function Home() {
   
@@ -17,7 +14,7 @@ export default function Home() {
   //     console.log(datas);
   //   } catch(e) {
   //     console.log(e);
-  //   }
+  //   }  
   // }
 
   // if(datas) {

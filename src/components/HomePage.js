@@ -4,39 +4,41 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+
     const apiUrl = "http://localhost:5000/todolist";
 
+    // router state
     const router = useRouter();
+
     const [showModal, setShowModal] = useState(false);
-    const [showPriority, setShowPriority] = useState(false);
-    
+    const [showPriority, setShowPriority] = useState(false);    
     const [priorityVal, setPriorityVal] = useState(5);
-    const [insertData, setInsertData] = useState({});
+    const [insertData, setInsertData] = useState([]);
     
     useEffect(() => {
         setInsertData(prevData => ({...prevData, priority: priorityVal}));
     }, [priorityVal]);
 
-    useEffect( () => {
+
+    useEffect( () => {    
         const fetchData = async () => {
             try{
                 const res = await fetch(apiUrl);
                 const data = await res.json();
-                setInsertData(data);
+                // const data = undefined;
+                if(!data.errors) router.push("/todolist");
+
             } catch(e) {
-                console.log(e);
+                // console.log(e);
+                throw new Error(e);
             }
-        }
-        fetchData();
-    },[])
+        };
 
-    if(insertData.length !== 0) {
-        console.log(insertData);    
-        router.push('/todolist');
-    }
-
+        fetchData()
+    }, []);
 
     // Functions handle
+
     function handleShowModalClick() {
         setShowModal(!showModal);
     };
@@ -53,18 +55,17 @@ export default function HomePage() {
     }
     
     async function handleClickSubmitData() {
-        console.log(insertData);
-        // try {
-        //     await fetch(apiUrl, {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json"
-        //         },
-        //         body: JSON.stringify(insertData)
-        //     })
-        // } catch(e) {
-        //     console.log(e)
-        // }
+        try {
+            await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(insertData)
+            })
+        } catch(e) {
+            console.log(e)
+        }
     };
     
 
