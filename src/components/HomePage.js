@@ -25,7 +25,6 @@ export default function HomePage() {
             try{
                 const res = await fetch(apiUrl);
                 const data = await res.json();
-                // const data = undefined;
                 if(!data.errors) router.push("/todolist");
 
             } catch(e) {
@@ -89,13 +88,13 @@ export default function HomePage() {
 
     return(
         <>
-        <InsertDataModal onClickPriorityBtn={handleClickPriority} showPriority={showPriority} onClickSubmitBtn={handleClickSubmitData} />
+        <InsertDataModal onClickPriorityBtn={handleClickPriority} showPriority={showPriority} onClickSubmitBtn={handleClickSubmitData} isPriorityExist={insertData} />
         <PriorityModal isPriorityClicked={showPriority} onClickPriorityVal={handleSetValPriority} />
         </>
     )
 }
 
-function InsertDataModal({onClickPriorityBtn, showPriority, onClickSubmitBtn}) {
+function InsertDataModal({onClickPriorityBtn, showPriority, onClickSubmitBtn, isPriorityExist}) {
 
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
@@ -105,19 +104,18 @@ function InsertDataModal({onClickPriorityBtn, showPriority, onClickSubmitBtn}) {
             <div className="card bg-gray-600 rounded-lg flex overflow-hidden shadow-lg h-60 w-96 max-w-2xl max-h-2xl">
                 <div className=" w-full">
                     <div className="m-4">
-                        <input type="text" value={title} placeholder="Title" className="w-full h-12 rounded-md p-4 font-mono" onChange={e => setTitle(e.target.value)} />
+                        <input type="text" value={title} placeholder="Title" className={"w-full h-12 rounded-md p-4 font-mono " + (showPriority ? "hidden" : " ")} onChange={e => setTitle(e.target.value)} />
                     </div>
                     <div className="m-4 rounded-md">
                         <textarea placeholder="Descriptions" value={desc} onChange={e => setDesc(e.target.value)} className="w-full h-14 p-4 rounded-lg focus:outline-none font-mono"></textarea>
                     </div>
                     <div className="flex justify-between">
-                        <div className="m-5 mt-1  bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right">
-                            <input type="button" value="Set Priority" className="cursor-pointer font-mono group" onClick={() => onClickPriorityBtn(title, desc)} />
+                        <div className="m-5 mt-1  bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right" onClick={() => onClickPriorityBtn(title, desc)}>
+                            <input type="button" value="Set Priority" className="cursor-pointer font-mono group" />
                         </div>
-                        <div className="m-5 mt-1 bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right">
-                            <input type="button" value="Submit" className="cursor-pointer font-mono group" onClick={() => onClickSubmitBtn(title, desc)} />
+                        <div className={"m-5 mt-1 bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right" + (showPriority || !isPriorityExist.title ? " hidden" : "")} onClick={() => onClickSubmitBtn(title, desc)} >
+                            <input type="button" value="Submit" className="cursor-pointer font-mono group" />
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -129,7 +127,7 @@ function InsertDataModal({onClickPriorityBtn, showPriority, onClickSubmitBtn}) {
 function PriorityModal({isPriorityClicked, onClickPriorityVal}) {
     return(
         <>
-        <div className={"absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" + (isPriorityClicked ? " " : " hidden")} id="priorityPopup">
+        <div className={"absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" + (isPriorityClicked ? " " : " hidden")}>
             <div className="">
                 <PriorityButton valData={onClickPriorityVal} classBtn="m-1 rounded-md p-2 bg-red-500 cursor-pointer text-white font-mono hover:bg-red-800 active:bg-red-600 w-14" val={1} />
                 <PriorityButton valData={onClickPriorityVal} classBtn="m-1 rounded-md  p-2 bg-orange-500 cursor-pointer text-white font-mono hover:bg-orange-800 active:bg-orange-500 w-14" id="priorityVal" val={2} />
@@ -138,7 +136,6 @@ function PriorityModal({isPriorityClicked, onClickPriorityVal}) {
                 <PriorityButton valData={onClickPriorityVal} classBtn="m-1 rounded-md  p-2 bg-green-500 cursor-pointer text-white font-mono hover:bg-green-800 active:bg-green-500 w-14" val={5} />
             </div>
         </div>
-
         </>
     )
 }
