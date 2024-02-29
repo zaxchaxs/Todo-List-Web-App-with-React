@@ -1,24 +1,33 @@
 'use client';
 
-import { data } from "autoprefixer";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
 export default function TodosPage() {
 
     const apiUrl = "http://localhost:5000/todolist";
     const [isCreate, setIsCreate] = useState(false);
+    const [isPriorityClicked, setPriorityClicked] = useState(false);
     const [datas, setDatas] = useState([]);
+    const [priority, setPriority] = useState(5);
+    const [newData, setNewData] = useState({priority: priority});
+    const router = useRouter();
 
     useEffect( () => {
-
         const fetchData = async () => {
-            const res = await fetch(apiUrl);
-            const data = await res.json();
-            setDatas(data);
+            try{
+                const res = await fetch(apiUrl);
+                const data = await res.json();
+                if(data.errors) {
+                    router.push("/");
+                    return;
+                }
+                setDatas(data);
+            } catch(e) {
+                throw new Error(e)
+            }
         };
-        
         fetchData();
-    }, [datas])
+    }, [])
 
     // handlers function
     const handleCreateTodo = () => {
@@ -26,24 +35,54 @@ export default function TodosPage() {
         setIsCreate(!isCreate);
     }
 
+    const handleClickPriorityBtn = (title, description) => {
+        setNewData({...newData, title, description})
+        setPriorityClicked(!isPriorityClicked)
+    }
+
+    const handleClickSubmitBtn = async () => {
+        try {
+            await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newData)
+            })
+        } catch(e) {
+            throw new Error(e);
+        }
+        setIsCreate(!isCreate);
+        setDatas([...datas, newData]);
+        setPriority(5);
+    }
+
+    const handleClickPriorityValBtn = (priority) => {
+        setNewData({...newData, priority})
+        setPriorityClicked(!isPriorityClicked)
+    }
+
     return(
         <>
-            <TodosHeader title={"Your Todolists"} desc={"Watchu doing? Do it!!"} />
-            <InsertDataModal isCreate={isCreate} />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {
-                datas.map(e => <TodosCard key={e.id} title={e.title} desc={e.description} priority={e.priority} /> )
-            }
+            <div className={isCreate ? "blur-md" : ""} >
+                <TodosHeader title={"Your Todolists"} desc={"Watchu doing? Do it!!"} />
+                <div className={"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"}>
+                {
+                    datas.map(e => <TodosCard key={e.id} title={e.title} desc={e.description} priority={e.priority} /> )
+                }
+                </div>
+                <CreateTodoButton onCreateTodo={handleCreateTodo} isCreateTodo={isCreate} />
             </div>
-            <CreateTodoButton onCreateTodo={handleCreateTodo} />
+                <InsertDataModal isCreateTodo={isCreate} onClickPriorityBtn={handleClickPriorityBtn} onClickSubmitBtn={handleClickSubmitBtn} isPriorityClicked={isPriorityClicked} newData={newData} />  
+                <PriorityModal isPriorityClicked={isPriorityClicked} onClickPriorityVal={handleClickPriorityValBtn} />              
         </>
     )
 }
 
 
-function CreateTodoButton({onCreateTodo}) {
+function CreateTodoButton({onCreateTodo, isCreateTodo}) {
     return(
-        <div className="fixed bottom-8 right-10 bg-gray-900 rounded-full w-12 h-12 cursor-pointer flex items-center justify-center shadow-lg hover:bg-gray-700  active:text-white active:bg-gray-900" onClick={onCreateTodo}>
+        <div className={"fixed bottom-8 right-10 bg-gray-900 rounded-full w-12 h-12 cursor-pointer flex items-center justify-center shadow-lg hover:bg-gray-700  active:text-white active:bg-gray-900 " + (isCreateTodo ? "hidden" : "") } onClick={onCreateTodo}>
             <div className="font-mono text-2xl text-white">
                 <button>+</button>
             </div>
@@ -77,14 +116,16 @@ function TodosCard({title, desc, priority }) {
     )
 }
 
-function InsertDataModal({onClickPriorityBtn, showPriority, onClickSubmitBtn, isCreate }) {
+function InsertDataModal({onClickPriorityBtn, onClickSubmitBtn, isCreateTodo, isPriorityClicked, newData }) {
 
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
+
+
     return(
         <>
-        <div className={"flex items-center justify-center h-screen inset-0 absolute " + (isCreate ? "" : "hidden")}>
-            <div className="card bg-gray-600 rounded-lg flex overflow-hidden shadow-lg h-60 w-96 max-w-2xl max-h-2xl">
+        <div className={"flex items-center justify-center h-screen inset-0 absolute " + (isCreateTodo ? "" : "hidden")}>
+            <div className={"card bg-gray-600 rounded-lg flex overflow-hidden shadow-lg h-60 w-96 max-w-2xl max-h-2xl " + (isPriorityClicked ? "blur-sm" : "")}>
                 <div className=" w-full">
                     <div className="m-4">
                         <input type="text" value={title} placeholder="Title" className={"w-full h-12 rounded-md p-4 font-mono "} onChange={e => setTitle(e.target.value)} />
@@ -93,10 +134,10 @@ function InsertDataModal({onClickPriorityBtn, showPriority, onClickSubmitBtn, is
                         <textarea placeholder="Descriptions" value={desc} onChange={e => setDesc(e.target.value)} className="w-full h-14 p-4 rounded-lg focus:outline-none font-mono"></textarea>
                     </div>
                     <div className="flex justify-between">
-                        <div className="m-5 mt-1  bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right" onClick={() => onClickPriorityBtn(title, desc)}>
+                        <div className={"m-5 mt-1 bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right " + (isPriorityClicked ? "hidden" : "")} onClick={() => onClickPriorityBtn(title, desc)}>
                             <input type="button" value="Set Priority" className="cursor-pointer font-mono group" />
                         </div>
-                        <div className={"m-5 mt-1 bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right" + (isCreate ? " hidden" : "")} onClick={() => onClickSubmitBtn(title, desc)} >
+                        <div className={"m-5 mt-1 bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right " + (newData.title && !isPriorityClicked? "" : " hidden")} onClick={() => onClickSubmitBtn(title, desc)} >
                             <input type="button" value="Submit" className="cursor-pointer font-mono group" />
                         </div>
                     </div>
@@ -105,4 +146,28 @@ function InsertDataModal({onClickPriorityBtn, showPriority, onClickSubmitBtn, is
         </div>
         </>
     )
+}
+
+function PriorityModal({isPriorityClicked, onClickPriorityVal}) {
+    return(
+        <>
+        <div className={"absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 " + (isPriorityClicked ? "" : "hidden")}>
+            <div className="">
+                <PriorityButton onClickPriorityVal={onClickPriorityVal} classBtn="m-1 rounded-md p-2 bg-red-500 cursor-pointer text-white font-mono hover:bg-red-800 active:bg-red-600 w-14" val={1} />
+                <PriorityButton onClickPriorityVal={onClickPriorityVal} classBtn="m-1 rounded-md  p-2 bg-orange-500 cursor-pointer text-white font-mono hover:bg-orange-800 active:bg-orange-500 w-14" id="priorityVal" val={2} />
+                <PriorityButton onClickPriorityVal={onClickPriorityVal} classBtn="m-1 rounded-md  p-2 bg-yellow-500 cursor-pointer text-white font-mono hover:bg-yellow-800 active:bg-yellow-500 w-14" val={3} />
+                <PriorityButton onClickPriorityVal={onClickPriorityVal} classBtn="m-1 rounded-md  p-2 bg-green-300 cursor-pointer text-white font-mono hover:bg-green-800 active:bg-green-300 w-14" val={4} />
+                <PriorityButton onClickPriorityVal={onClickPriorityVal} classBtn="m-1 rounded-md  p-2 bg-green-500 cursor-pointer text-white font-mono hover:bg-green-800 active:bg-green-500 w-14" val={5} />
+            </div>
+        </div>
+        </>
+    )
+}
+
+function PriorityButton({classBtn, onClickPriorityVal, val}) {
+    return(
+        <>
+            <input type="button" value={val} className={classBtn} onClick={e => onClickPriorityVal(e.target.value)} />
+        </>
+    )    
 }

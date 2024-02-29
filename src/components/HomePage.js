@@ -13,7 +13,7 @@ export default function HomePage() {
     const [showModal, setShowModal] = useState(false);
     const [showPriority, setShowPriority] = useState(false);    
     const [priorityVal, setPriorityVal] = useState(5);
-    const [insertData, setInsertData] = useState([]);
+    const [insertData, setInsertData] = useState({});
     
     useEffect(() => {
         setInsertData(prevData => ({...prevData, priority: priorityVal}));
@@ -49,7 +49,7 @@ export default function HomePage() {
     
     
     function handleSetValPriority(val) {
-        setShowPriority(!showPriority);
+        setShowPriority(!showPriority); 
         setPriorityVal(Number(val));
     }
     
@@ -63,7 +63,8 @@ export default function HomePage() {
                 body: JSON.stringify(insertData)
             })
         } catch(e) {
-            console.log(e)
+            // console.log(e)
+            throw new Error(e)
         }
 
         router.push("/todolist")
@@ -112,10 +113,10 @@ function InsertDataModal({onClickPriorityBtn, showPriority, onClickSubmitBtn, is
                         <textarea placeholder="Descriptions" value={desc} onChange={e => setDesc(e.target.value)} className="w-full h-14 p-4 rounded-lg focus:outline-none font-mono"></textarea>
                     </div>
                     <div className="flex justify-between">
-                        <div className="m-5 mt-1  bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right" onClick={() => onClickPriorityBtn(title, desc)}>
+                        <div className={"m-5 mt-1  bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right " + (showPriority ? "hidden" :  "")} onClick={() => onClickPriorityBtn(title, desc)}>
                             <input type="button" value="Set Priority" className="cursor-pointer font-mono group" />
                         </div>
-                        <div className={"m-5 mt-1 bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right" + (showPriority || !isPriorityExist.title ? " hidden" : "")} onClick={() => onClickSubmitBtn(title, desc)} >
+                        <div className={"m-5 mt-1 bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right" + (showPriority || !isPriorityExist.title ? " hidden" : "")} onClick={onClickSubmitBtn} >
                             <input type="button" value="Submit" className="cursor-pointer font-mono group" />
                         </div>
                     </div>
