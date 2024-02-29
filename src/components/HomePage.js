@@ -65,6 +65,8 @@ export default function HomePage() {
         } catch(e) {
             console.log(e)
         }
+
+        router.push("/todolist")
     };
     
 
@@ -104,7 +106,7 @@ function InsertDataModal({onClickPriorityBtn, showPriority, onClickSubmitBtn, is
             <div className="card bg-gray-600 rounded-lg flex overflow-hidden shadow-lg h-60 w-96 max-w-2xl max-h-2xl">
                 <div className=" w-full">
                     <div className="m-4">
-                        <input type="text" value={title} placeholder="Title" className={"w-full h-12 rounded-md p-4 font-mono " + (showPriority ? "hidden" : " ")} onChange={e => setTitle(e.target.value)} />
+                        <input type="text" value={title} placeholder="Title" className={"w-full h-12 rounded-md p-4 font-mono "} onChange={e => setTitle(e.target.value)} />
                     </div>
                     <div className="m-4 rounded-md">
                         <textarea placeholder="Descriptions" value={desc} onChange={e => setDesc(e.target.value)} className="w-full h-14 p-4 rounded-lg focus:outline-none font-mono"></textarea>
