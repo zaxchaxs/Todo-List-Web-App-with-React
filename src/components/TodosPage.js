@@ -9,7 +9,7 @@ export default function TodosPage() {
     const [isPriorityClicked, setPriorityClicked] = useState(false);
     const [datas, setDatas] = useState([]);
     const [priority, setPriority] = useState(5);
-    const [newData, setNewData] = useState({priority: priority});
+    const [newData, setNewData] = useState({priority});
     const router = useRouter();
 
     useEffect( () => {
@@ -55,6 +55,7 @@ export default function TodosPage() {
         setIsCreate(!isCreate);
         setDatas([...datas, newData]);
         setPriority(5);
+        setNewData(priority);
     }
 
     const handleClickPriorityValBtn = (priority) => {
@@ -105,8 +106,8 @@ function TodosHeader({title, desc}) {
 
 function TodosCard({title, desc, priority }) {
     return(
-        <div className="bg-gray-600 rounded-lg overflow-hidden shadow-lg h-60 m-5">
-            <p className="text-white font-mono text-xl p-4 bg-gray-900 font-bold">{title}</p>
+        <div className="bg-gray-600 rounded-lg overflow-hidden shadow-lg h-60 m-5 text-ellipsis whitespace-break-spaces">
+            <p className="text-white font-mono text-xl p-4 bg-gray-900 font-bold h-14 leading-relaxed overflow-hidden">{title}</p>
             <p className="text-black font-mono text-lg p-4 text-justify h-1/2 overflow-hidden font-bold">{desc}</p>
             <div className="flex justify-between p-2 z-50">
                 <p className="p-2 w-12 text-center rounded-md bg-gray-900 text-white font-bold">{priority}</p>
@@ -121,10 +122,9 @@ function InsertDataModal({onClickPriorityBtn, onClickSubmitBtn, isCreateTodo, is
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
 
-
     return(
         <>
-        <div className={"flex items-center justify-center h-screen inset-0 absolute " + (isCreateTodo ? "" : "hidden")}>
+        <div className={"flex items-center justify-center h-screen inset-0 fixed " + (isCreateTodo ? "fixed" : "hidden")}>
             <div className={"card bg-gray-600 rounded-lg flex overflow-hidden shadow-lg h-60 w-96 max-w-2xl max-h-2xl " + (isPriorityClicked ? "blur-sm" : "")}>
                 <div className=" w-full">
                     <div className="m-4">
@@ -137,7 +137,7 @@ function InsertDataModal({onClickPriorityBtn, onClickSubmitBtn, isCreateTodo, is
                         <div className={"m-5 mt-1 bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right " + (isPriorityClicked ? "hidden" : "")} onClick={() => onClickPriorityBtn(title, desc)}>
                             <input type="button" value="Set Priority" className="cursor-pointer font-mono group" />
                         </div>
-                        <div className={"m-5 mt-1 bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right " + (newData.title && !isPriorityClicked? "" : " hidden")} onClick={() => onClickSubmitBtn(title, desc)} >
+                        <div className={"m-5 mt-1 bg-gray-800 w-fit p-2 rounded-md flex  hover:bg-gray-500 hover:text-black active:bg-gray-800 active:text-white transition-all duration-100 cursor-pointer text-white float-right " + (newData.title && !isPriorityClicked? "" : " hidden")} onClick={() => {onClickSubmitBtn(title, desc); setTitle(""); setDesc("")}} >
                             <input type="button" value="Submit" className="cursor-pointer font-mono group" />
                         </div>
                     </div>
@@ -151,7 +151,7 @@ function InsertDataModal({onClickPriorityBtn, onClickSubmitBtn, isCreateTodo, is
 function PriorityModal({isPriorityClicked, onClickPriorityVal}) {
     return(
         <>
-        <div className={"absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 " + (isPriorityClicked ? "" : "hidden")}>
+        <div className={"top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 " + (isPriorityClicked ? "fixed z-50" : "hidden")}>
             <div className="">
                 <PriorityButton onClickPriorityVal={onClickPriorityVal} classBtn="m-1 rounded-md p-2 bg-red-500 cursor-pointer text-white font-mono hover:bg-red-800 active:bg-red-600 w-14" val={1} />
                 <PriorityButton onClickPriorityVal={onClickPriorityVal} classBtn="m-1 rounded-md  p-2 bg-orange-500 cursor-pointer text-white font-mono hover:bg-orange-800 active:bg-orange-500 w-14" id="priorityVal" val={2} />
