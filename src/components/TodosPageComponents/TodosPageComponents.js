@@ -53,7 +53,7 @@ function InsertDataModal({onClickPriorityBtn, onClickSubmitBtn, isCreateTodo, is
 
     return(
         <>
-        <div className={"flex items-center justify-center h-screen inset-0 fixed " + (isCreateTodo ? "fixed" : "hidden")}>
+        <div className={"flex items-center justify-center h-screen inset-0  " + (isCreateTodo ? "fixed" : "hidden")}>
             <div className={"card bg-gray-600 rounded-lg flex overflow-hidden shadow-lg h-60 w-96 max-w-2xl max-h-2xl " + (isPriorityClicked ? "blur-sm" : "")}>
                 <div className=" w-full">
                     <div className="m-4">

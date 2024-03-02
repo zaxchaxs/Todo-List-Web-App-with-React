@@ -1,9 +1,8 @@
-import DetailModal from '@/components/DetailModal';
+import DetailPage from '@/components/DetailPage';
 
 export default function Page({ params }) {
     
-    console.log(params);
     return (
-        <DetailModal params={params.id} />
+        <DetailPage params={params.id} />
     )
   }
