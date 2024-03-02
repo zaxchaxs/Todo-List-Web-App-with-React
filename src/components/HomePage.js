@@ -73,19 +73,17 @@ export default function HomePage() {
 
     if(!showModal) {
         return(
-            <>
-            <div className="container  mx-auto p-14 pt-32" id="createTodo">
-                <div className="flex justify-center p-2">
-                    <h1 className="text-3xl font-bold font-mono text-gray-900">Every to-do list is a small step towards big dreams</h1>
-                </div>
-                <div className="flex justify-center">
-                    <h1 className="text-2xl font-bold font-mono text-gray-600">Start planning today!</h1>
-                </div>
-                <div className=" justify-center flex">
-                    <button className="bg-gray-800 p-2 font-mono rounded-lg m-4 text-white hover:bg-gray-500 hover:text-gray-800 active:bg-gray-800 active:text-white transition-all duration-100" id="createBtn" onClick={handleShowModalClick}>Create Todo!</button> 
-                </div>
-            </div>            
-            </>
+        <div className="container  mx-auto p-14 pt-32" id="createTodo">
+            <div className="flex justify-center p-2">
+                <h1 className="text-3xl font-bold font-mono text-gray-900">Every to-do list is a small step towards big dreams</h1>
+            </div>
+            <div className="flex justify-center">
+                <h1 className="text-2xl font-bold font-mono text-gray-600">Start planning today!</h1>
+            </div>
+            <div className=" justify-center flex">
+                <button className="bg-gray-800 p-2 font-mono rounded-lg m-4 text-white hover:bg-gray-500 hover:text-gray-800 active:bg-gray-800 active:text-white transition-all duration-100">Create Todo!</button> 
+            </div>
+        </div>            
         )
     };
 
@@ -104,7 +102,7 @@ function InsertDataModal({onClickPriorityBtn, showPriority, onClickSubmitBtn, is
     return(
         <>
         <div className={"flex items-center justify-center h-screen inset-0 absolute" + (showPriority ? " blur-lg" : " ")}>
-            <div className="card bg-gray-600 rounded-lg flex overflow-hidden shadow-lg h-60 w-96 max-w-2xl max-h-2xl">
+            <div className="bg-gray-600 rounded-lg flex overflow-hidden shadow-lg h-60 w-96 max-w-2xl max-h-2xl">
                 <div className=" w-full">
                     <div className="m-4">
                         <input type="text" value={title} placeholder="Title" className={"w-full h-12 rounded-md p-4 font-mono "} onChange={e => setTitle(e.target.value)} />
