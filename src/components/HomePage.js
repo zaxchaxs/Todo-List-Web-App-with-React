@@ -19,16 +19,13 @@ export default function HomePage() {
         setInsertData(prevData => ({...prevData, priority: priorityVal}));
     }, [priorityVal]);
 
-
     useEffect( () => {    
         const fetchData = async () => {
             try{
                 const res = await fetch(apiUrl);
                 const data = await res.json();
                 if(!data.errors) router.push("/todolist");
-
             } catch(e) {
-                // console.log(e);
                 throw new Error(e);
             }
         };
@@ -63,7 +60,6 @@ export default function HomePage() {
                 body: JSON.stringify(insertData)
             })
         } catch(e) {
-            // console.log(e)
             throw new Error(e)
         }
 
@@ -81,7 +77,7 @@ export default function HomePage() {
                 <h1 className="text-2xl font-bold font-mono text-gray-600">Start planning today!</h1>
             </div>
             <div className=" justify-center flex">
-                <button className="bg-gray-800 p-2 font-mono rounded-lg m-4 text-white hover:bg-gray-500 hover:text-gray-800 active:bg-gray-800 active:text-white transition-all duration-100">Create Todo!</button> 
+                <button className="bg-gray-800 p-2 font-mono rounded-lg m-4 text-white hover:bg-gray-500 hover:text-gray-800 active:bg-gray-800 active:text-white transition-all duration-100" onClick={() => setShowModal(!showModal) } >Create Todo!</button> 
             </div>
         </div>            
         )
@@ -144,7 +140,7 @@ function PriorityModal({isPriorityClicked, onClickPriorityVal}) {
 function PriorityButton({classBtn, valData, val}) {
     return(
         <>
-            <input type="button" value={val} className={classBtn} onClick={e => valData(e.target.value)} />
+            <input type="button" value={val} className={classBtn} onClick={e => valData(Number(e.target.value))} />
         </>
     )    
 }

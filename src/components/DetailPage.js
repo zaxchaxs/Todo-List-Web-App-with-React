@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }) {
     
@@ -8,6 +9,7 @@ export default function Page({ params }) {
     const [todo, setTodo] = useState({});
     const [isUpdate, setIsUpdate] = useState(false);
     const [isPriorityClicked, setPriorityClicked] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         const getTodo = async () => {
@@ -33,14 +35,37 @@ export default function Page({ params }) {
         setTodo({...todo, title, description})
     };
 
-    const handlerClickPriorityVal = () => {
+    const handlerClickPriorityVal = (priority) => {
         setPriorityClicked(!isPriorityClicked)
+        setTodo({...todo, priority})
+    }
+
+    const handlerClickSubmit = async () => {
+        const data = {
+            title: todo.title,
+            description: todo.description,
+            priority: todo.priority
+        };
+
+        try {
+            await fetch(apiUrl + params, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+        } catch (e) {
+            throw new Error(e);
+        }
+        setIsUpdate(!isUpdate);
+        router.push("/todolist");
     }
 
     return(
         <>
             <DetailModal todo={todo} onUpdateClick={handlerClickUpdate} isUpdate={isUpdate} />
-            <UpdateTodoModal isUpdate={isUpdate} isPriorityClicked={isPriorityClicked} onClickPriorityBtn={handlerClickPriority} />
+            <UpdateTodoModal isUpdate={isUpdate} isPriorityClicked={isPriorityClicked} onClickPriorityBtn={handlerClickPriority} onClickSubmitBtn={handlerClickSubmit} />
             <PriorityModal isPriorityClicked={isPriorityClicked} onClickPriorityVal={handlerClickPriorityVal} />
         </>
     )
@@ -55,7 +80,7 @@ export default function Page({ params }) {
             </div>
             <div className="bg-gray-600 p-10 text-justify rounded-lg">
                 <div>
-                    <p className="text-2xl font-bold font-mono text-gray-900">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptatibus fugiat, eius quae reprehenderit autem molestiae numquam recusandae incidunt vel adipisci, eum nostrum temporibus iure mollitia quasi laboriosam, inventore nihil! Omnis. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Praesentium fuga fugit, unde voluptates asperiores dolor id cupiditate! Quae ea similique nobis ut voluptatem maxime nihil minus, deleniti possimus suscipit praesentium. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Reprehenderit tenetur pariatur error repellendus consequuntur recusandae, incidunt accusamus distinctio unde debitis beatae eius aperiam amet nemo non praesentium expedita veritatis dolorem. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptas magni molestiae nesciunt est, vitae quod, ratione unde dolor recusandae optio doloribus saepe molestias iusto architecto hic deleniti sapiente soluta. Vero.</p>
+                    <p className="text-2xl font-bold font-mono text-gray-900">{todo.description}</p>
                 </div>
             </div>
             <div className="p-5 border-2 border-black flex justify-between">
@@ -66,7 +91,7 @@ export default function Page({ params }) {
     )
   }
 
-function UpdateTodoModal({isUpdate, isPriorityClicked, onClickPriorityBtn}) {
+function UpdateTodoModal({isUpdate, isPriorityClicked, onClickPriorityBtn, onClickSubmitBtn}) {
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
 
@@ -96,7 +121,6 @@ function UpdateTodoModal({isUpdate, isPriorityClicked, onClickPriorityBtn}) {
 
 function PriorityModal({isPriorityClicked, onClickPriorityVal}) {
     return(
-        <>
         <div className={"top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 " + (isPriorityClicked ? "fixed z-30" : "hidden")}>
             <div className="">
                 <PriorityButton onClickPriorityVal={onClickPriorityVal} classBtn="m-1 rounded-md p-2 bg-red-500 cursor-pointer text-white font-mono hover:bg-red-800 active:bg-red-600 w-14" val={1} />
@@ -106,14 +130,13 @@ function PriorityModal({isPriorityClicked, onClickPriorityVal}) {
                 <PriorityButton onClickPriorityVal={onClickPriorityVal} classBtn="m-1 rounded-md  p-2 bg-green-500 cursor-pointer text-white font-mono hover:bg-green-800 active:bg-green-500 w-14" val={5} />
             </div>
         </div>
-        </>
     )
 }
   
 function PriorityButton({classBtn, onClickPriorityVal, val}) {
     return(
         <>
-            <input type="button" value={val} className={classBtn} onClick={e => onClickPriorityVal(e.target.value)} />
+            <input type="button" value={val} className={classBtn} onClick={e => onClickPriorityVal(Number(e.target.value))} />
         </>
     )    
 }
