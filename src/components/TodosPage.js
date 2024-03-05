@@ -33,7 +33,6 @@ export default function TodosPage() {
 
     // handlers function
     const handleCreateTodo = () => {
-        console.log(datas);
         setIsCreate(!isCreate);
     }
 
@@ -50,12 +49,16 @@ export default function TodosPage() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(newData)
-            })
+            });
+            
+            const res = await fetch(apiUrl);
+            const data = await res.json();
+            setDatas(data);
         } catch(e) {
             throw new Error(e);
         }
+
         setIsCreate(!isCreate);
-        setDatas([...datas, newData]);
         setPriority(5);
         setNewData(priority);
     }
@@ -68,7 +71,7 @@ export default function TodosPage() {
     return(
         <>
             <div className={"mt-0 " + (isCreate ? "blur-md" : "")} >
-                <TodosHeader title={"Your Todolists"} desc={"Watchu doing? Do it!!"} />
+                <TodosHeader title={"Your Todo Lists"} desc={"Watchu doing? Do it!!"} />
                 <div className={"mt-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"}>
                 {
                     datas.map(e => <TodosCard key={e.id} idTodo={e.id} testing={e} title={e.title} desc={e.description} priority={e.priority} /> )
